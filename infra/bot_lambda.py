@@ -50,7 +50,7 @@ def setup_iam_role_for_lambda():
 
     return role
 
-def setup_lambda_function(lambda_layer, role):
+def setup_lambda_function(lambda_layer, role, token_config_key="telegram_bot_token"):
 
     # Function code zip (excluding dependencies)
     zip_file = 'bot_code.zip'
