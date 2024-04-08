@@ -1,0 +1,6 @@
+*.pyc
+venv/
+*.zip
+secrets.env
+.env
+*.env
