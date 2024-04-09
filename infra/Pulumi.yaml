@@ -1,4 +1,4 @@
-name: yoman
+name: chatbot-example
 runtime:
   name: python
   options:

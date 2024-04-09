@@ -14,17 +14,16 @@ bot_dir = '../bot'
 
 def setup_lambda_layer():
     # Define AWS resources
-    lambda_layer_zip_file = 'dependencies_layer.zip'
+    lambda_layer_zip_file = 'target/dependencies_layer.zip'
     layer_requirements_path = os.path.join(bot_dir, 'requirements.txt')
 
     # Prepare the Lambda layer package with dependencies
     output_file_name = install_dependencies_and_prepare_layer(layer_requirements_path, lambda_layer_zip_file)
-    print(f'Lambda layer package created at {output_file_name}')
 
     zipped_code = pulumi.FileArchive(output_file_name)
     # Create the Lambda layer
-    lambda_layer = aws.lambda_.LayerVersion("myLambdaLayer",
-                                            layer_name="my-dependencies-layer",
+    lambda_layer = aws.lambda_.LayerVersion("telegramLambdaLayer",
+                                            layer_name="telegram-dependencies-layer",
                                             code=zipped_code,
                                             compatible_runtimes=[PY_VER],
                                             )
