@@ -23,7 +23,7 @@ def zip_directory(source_folder, output_filename):
 def install_dependencies_and_prepare_layer(requirements_path, layer_output_filename):
     with tempfile.TemporaryDirectory() as dependencies_folder:
 
-        deps_dir = os.path.join(dependencies_folder, 'python/lib', aws.lambda_.Runtime.PYTHON3D12.value, 'site-packages')
+        deps_dir = os.path.join(dependencies_folder, 'python/lib', PY_VER, 'site-packages')
         # Install dependencies into the layer directory
         subprocess.run(["pip3", "install", "-r", requirements_path, "-t", deps_dir], check=True)
 
