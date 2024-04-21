@@ -6,7 +6,7 @@ import pulumi_aws as aws
 from pulumi_aws import iam
 
 from telegram_webhook_provider import Webhook
-from utils import zip_directory, install_dependencies_and_prepare_layer, python_version
+from utils import install_dependencies_and_prepare_layer, python_version, prepare_code
 
 PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
@@ -15,7 +15,7 @@ bot_dir = '../bot'
 def setup_lambda_layer(cloud_provider):
     # Define AWS resources
     lambda_layer_zip_file = 'target/dependencies_layer.zip'
-    layer_requirements_path = os.path.join(bot_dir, f'{cloud_provider}_requirements.txt')
+    layer_requirements_path = os.path.join(bot_dir, cloud_provider, 'requirements.txt')
 
     # Prepare the Lambda layer package with dependencies
     install_dependencies_and_prepare_layer(layer_requirements_path, lambda_layer_zip_file)
@@ -53,7 +53,7 @@ def setup_lambda_function(lambda_layer, role, token_config_key="telegram_bot_tok
 
     # Function code zip (excluding dependencies)
     zip_file = 'target/aws_bot_code.zip'
-    zip_directory(bot_dir, zip_file)
+    prepare_code(bot_dir, zip_file, cloud_provider='aws')
 
     # Create the Lambda function
     lambda_function = aws.lambda_.Function("TelegramBot",

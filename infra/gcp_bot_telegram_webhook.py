@@ -1,16 +1,10 @@
-import json
-import os
-
 import pulumi
 import pulumi_aws as aws
-from pulumi_aws import iam
 import pulumi_gcp as gcp
-from pulumi_gcp import storage, cloudfunctions
-from pulumi import Config, Output, ResourceOptions
-
+from pulumi import Config
 
 from telegram_webhook_provider import Webhook
-from utils import zip_directory, install_dependencies_and_prepare_layer, python_version
+from utils import python_version, prepare_code
 
 PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
@@ -22,7 +16,7 @@ region = config.require('region')
 
 def setup_cloud_function():
     zip_file = 'target/gcp_bot_code.zip'
-    zip_directory(bot_dir, zip_file)
+    prepare_code(bot_dir, zip_file, cloud_provider='gcp')
     # GCP Storage Bucket
     bucket = gcp.storage.Bucket(
         bucket_name,
