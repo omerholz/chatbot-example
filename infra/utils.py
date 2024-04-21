@@ -2,9 +2,16 @@ import os
 import subprocess
 import tempfile
 from zipfile import ZipFile, ZIP_DEFLATED
+import pulumi
 import pulumi_aws as aws
 
-PY_VER = aws.lambda_.Runtime.PYTHON3D12
+python_version = "python3.12"
+
+supported_cloud_providers = ['aws', 'gcp']
+cloud_provider = pulumi.Config().get('cloud_provider', 'aws').lower()
+if cloud_provider not in supported_cloud_providers:
+    raise ValueError(f"Unsupported cloud provider: {cloud_provider}. Supported providers: {supported_cloud_providers}")
+
 
 def zip_directory(source_folder, output_filename):
     # create directory for the output file if it doesn't exist
@@ -23,7 +30,7 @@ def zip_directory(source_folder, output_filename):
 def install_dependencies_and_prepare_layer(requirements_path, layer_output_filename):
     with tempfile.TemporaryDirectory() as dependencies_folder:
 
-        deps_dir = os.path.join(dependencies_folder, 'python/lib', PY_VER, 'site-packages')
+        deps_dir = os.path.join(dependencies_folder, 'python/lib', python_version, 'site-packages')
         # Install dependencies into the layer directory
         subprocess.run(["pip3", "install", "-r", requirements_path, "-t", deps_dir], check=True)
 
@@ -31,4 +38,5 @@ def install_dependencies_and_prepare_layer(requirements_path, layer_output_filen
         zip_directory(dependencies_folder, layer_output_filename)
 
         return layer_output_filename
+
 

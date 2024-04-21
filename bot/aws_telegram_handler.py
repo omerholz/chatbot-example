@@ -1,9 +1,9 @@
-# bot/lambda_handler.py
+# bot/aws_telegram_handler.py
 import asyncio
 import json
 import logging
 
-from bot.telegram_handler import handle_webhook
+from telegram_handler import handle_webhook
 
 # Enable logging
 logger = logging.getLogger(__name__)
