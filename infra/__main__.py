@@ -8,11 +8,14 @@ if cloud_provider == 'aws':
     lambda_iam_role = aws_bot_telegram_webhook.setup_iam_role_for_lambda()
     lambda_function = aws_bot_telegram_webhook.setup_lambda_function(lambda_layer, role=lambda_iam_role)
     api = aws_bot_telegram_webhook.setup_api_gateway(lambda_function)
+    # Register the webhook
     aws_bot_telegram_webhook.register_webhook(api)
 
 elif cloud_provider == 'gcp':
     import gcp_bot_telegram_webhook
 
-    cloud_function = gcp_bot_telegram_webhook.setup_cloud_function()
+    # Setup telegram bot
+    cloud_function = gcp_bot_telegram_webhook.setup_cloud_function(cloud_provider)
+    # Register the webhook
     gcp_bot_telegram_webhook.register_webhook(cloud_function)
 

@@ -14,9 +14,9 @@ pulumi.log.info(f'bucket_name {bucket_name}')
 bot_token = pulumi.Config().require_secret("telegram_bot_token")
 region = config.require('region')
 
-def setup_cloud_function():
+def setup_cloud_function(cloud_provider):
     zip_file = 'target/gcp_bot_code.zip'
-    prepare_code(bot_dir, zip_file, cloud_provider='gcp')
+    prepare_code(bot_dir, zip_file, cloud_provider=cloud_provider)
     # GCP Storage Bucket
     bucket = gcp.storage.Bucket(
         bucket_name,
