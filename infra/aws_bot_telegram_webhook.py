@@ -6,21 +6,21 @@ import pulumi_aws as aws
 from pulumi_aws import iam
 
 from telegram_webhook_provider import Webhook
-from utils import zip_directory, install_dependencies_and_prepare_layer, PY_VER
+from utils import install_dependencies_and_prepare_layer, python_version, prepare_code
 
-
+PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
 
 
-def setup_lambda_layer():
+def setup_lambda_layer(cloud_provider):
     # Define AWS resources
     lambda_layer_zip_file = 'target/dependencies_layer.zip'
-    layer_requirements_path = os.path.join(bot_dir, 'requirements.txt')
+    layer_requirements_path = os.path.join(bot_dir, cloud_provider, 'requirements.txt')
 
     # Prepare the Lambda layer package with dependencies
-    output_file_name = install_dependencies_and_prepare_layer(layer_requirements_path, lambda_layer_zip_file)
+    install_dependencies_and_prepare_layer(layer_requirements_path, lambda_layer_zip_file)
 
-    zipped_code = pulumi.FileArchive(output_file_name)
+    zipped_code = pulumi.FileArchive(lambda_layer_zip_file)
     # Create the Lambda layer
     lambda_layer = aws.lambda_.LayerVersion("telegramLambdaLayer",
                                             layer_name="telegram-dependencies-layer",
@@ -49,15 +49,15 @@ def setup_iam_role_for_lambda():
 
     return role
 
-def setup_lambda_function(lambda_layer, role, token_config_key="telegram_bot_token"):
+def setup_lambda_function(lambda_layer, role):
 
     # Function code zip (excluding dependencies)
-    zip_file = 'bot_code.zip'
-    zip_directory(bot_dir, zip_file)
+    zip_file = 'target/aws_bot_code.zip'
+    prepare_code(bot_dir, zip_file, cloud_provider='aws')
 
     # Create the Lambda function
     lambda_function = aws.lambda_.Function("TelegramBot",
-                                        handler="handler.lambda_handler",
+                                        handler="aws_telegram_handler.lambda_handler",
                                         role=role.arn,
                                         runtime=PY_VER,
                                         code=pulumi.FileArchive(zip_file),
