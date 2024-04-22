@@ -32,7 +32,7 @@ Clone the repository and cd into the infra directory.
 
 ```bash
 git clone git@github.com:omerholz/chatbot-example.git
-cd chatbot-example
+cd chatbot-example/infra
 ```
 
 Create a pulumi stack. We recommend creating a separate stack for each cloud provider and env
