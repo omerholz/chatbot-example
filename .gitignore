@@ -34,6 +34,7 @@ __pypackages__/
 
 # Environments
 .env
+**/.secrets.env
 .venv
 env/
 venv/

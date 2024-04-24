@@ -10,6 +10,7 @@ from utils import install_dependencies_and_prepare_layer, python_version, prepar
 
 PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
+bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
 
 
 def setup_lambda_layer(cloud_provider):
@@ -27,6 +28,7 @@ def setup_lambda_layer(cloud_provider):
                                             code=zipped_code,
                                             compatible_runtimes=[PY_VER],
                                             )
+    pulumi.export('lambda_layer_arn', lambda_layer.arn)
 
     return lambda_layer
 
@@ -64,7 +66,7 @@ def setup_lambda_function(lambda_layer, role):
                                         layers=[lambda_layer.arn],
                                         environment=aws.lambda_.FunctionEnvironmentArgs(
                                             variables={
-                                                "TELEGRAM_BOT_TOKEN": pulumi.Config().require_secret("telegram_bot_token")
+                                                "TELEGRAM_BOT_TOKEN": bot_token
                                             }
                                         ))
 
@@ -97,7 +99,7 @@ def register_webhook(api, token_config_key="telegram_bot_token"):
     # Register the Telegram webhook using the full URL including the route
     webhook_url = pulumi.Output.concat(api.api_endpoint, "/bot")
     webhook = Webhook("telegramWebhookRegistration",
-                      token=pulumi.Config().require_secret(token_config_key),
+                      token=bot_token,
                       url=webhook_url)
 
     # Export the API endpoint URL including the /bot route

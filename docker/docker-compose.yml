@@ -1,0 +1,21 @@
+services:
+  pulumi:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - pulumi_data:/root/.pulumi  # Persistent volume for Pulumi data
+      - run_volume:/var/run  # Persistent volume for /var/run
+      - $HOME/.gcp:/root/.gcp:ro  # Mount GCP credentials directory
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1
+      - GCP_PROJECT_ID=playground-420620
+      - GOOGLE_CREDENTIALS=/root/.gcp/gcp-service-account.json
+    env_file:
+      - .secrets.env
+    tty: true
+volumes:
+  pulumi_data:
+    name: pulumi_data
+  run_volume:
+    name: run_volume

@@ -1,0 +1,3 @@
+ -r aws/requirements.txt
+ -r gcp/requirements.txt
+ aws-lambda-powertools[all]>=2.37.0,<3.0.0
