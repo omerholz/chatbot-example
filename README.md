@@ -6,21 +6,21 @@ Check out the blog post [here](https://omerholz.com/blog/serverless-telegram-bot
 
 ## Prerequisites
 
-- Python 3.12
-- AWS Account
-- [Pulumi CLI installed and configured](https://www.pulumi.com/docs/install/)
 - Telegram Bot Token
+- Pulumi Token
+- Docker
 
 ### AWS Prerequisites
 
-- [AWS CLI installed, configured and logged in](https://github.com/aws/aws-cli)
+- AWS Account with Access Key ID and Secret
 
 ### Google Cloud Platform Prerequisites
 
-* [GCP gcloud CLI Installed configured and logged in](https://cloud.google.com/sdk/docs/install)
-* gcloud CLI and the service account you use must have all the required permissions to the project and the APIs
+* GCP Service Account with Credentials
 
+## Pulumi and Docker
 
+We use Pulumi to demonstrate and teach IaC using Pulumi, and so we use Pulumi to deploy infrastructure to the cloud. We use Docker to make sure the examples in this repo can work on any environment and to document the environment setup and configuration.
 
 ## Multi-Cloud
 
@@ -32,54 +32,62 @@ Clone the repository and cd into the infra directory.
 
 ```bash
 git clone git@github.com:omerholz/chatbot-example.git
-cd chatbot-example/infra
+cd chatbot-example
 ```
 
-Create a pulumi stack. We recommend creating a separate stack for each cloud provider and env
+Use the `docker/.secrets.env.example` file template to create a `docker/secrets.env`
 
 ```bash
-pulumi stack init gcp-dev
-pulumi stack init aws-dev
+cp docker/.secrets.env.example docker/.secrets.env
 ```
 
-Select the stack and set relevant configuration values
+The edit the file with the relevant tokens and secrets
+
+Update the `docker-compose.yml` file then build the image:
 
 ```bash
-pulumi stack select aws-dev
-pulumi config set cloud_provider aws
-pulumi config set aws:region <region>
-```
-
-```bash
-pulumi stack select gcp-dev
-pulumi config set cloud_provider gcp
-pulumi config set gcp:project <project_id>
-pulumi config set region <region>
-pulumi config set telegram-bot-bucket <bucket>
-```
-
-Set your Telegram Bot Token as a Pulumi secret for both stacks:
-
-```bash
-pulumi config set --secret telegram_bot_token <YOUR_TELEGRAM_BOT_TOKEN> 
+docker compose -f docker/docker-compose.yml build
 ```
 
 ## Deploy
 
-Run the following command to deploy the infrastructure.
+#### AWS
+
+Run your pulumi docker container
+
+```bash
+docker compose -f docker/docker-compose.yml run -it --rm pulumi
+```
+
+This will get you into the pulumi container where pulumi is installed and configured. Then select the desired Pulumi stack:
+
+```bash
+root@8ac05567f4ac:/app/infra# pulumi stack select aws
+Logging in using access token from PULUMI_ACCESS_TOKEN
+```
+
+Now you are all set to deploy your function to AWS using `pulumi up`
 
 ```bash
 pulumi up
 ```
 
-Pulumi will diagnose the stack and prompt you to confirm the deployment. Type `yes` and hit enter. That's it! Pulumi will deploy the infrastructure and output the URL of the API Gateway. At this point your chatbot is up and running. Try and talk to it!
+This will deploy the necessary resources to AWS. You're up and running! Give your bot a try.
 
-## Clean up
-
-To clean up the resources, run the following command.
+To take down the resource you deployed you can use 
 
 ```bash
 pulumi destroy
+```
+
+#### GCP
+
+To deploy to GCP, do the same but select the gcp stack before running `pulumi up` and `pulumi destroy`
+
+```bash
+docker compose -f docker/docker-compose.yml run -it --rm pulumi
+pulumi stack select gcp
+pulumi up
 ```
 
 ## Building your own chatbot
