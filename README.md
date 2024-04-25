@@ -26,12 +26,28 @@ We use Pulumi to demonstrate and teach IaC using Pulumi, and so we use Pulumi to
 
 This project demonstrates using pulumi for multi-cloud deployment. Multi-cloud deployment can be useful to avoid vendor lock-in and allow you to leverage more power when negotiating with cloud providers. Currently multi-cloud is only demonstrated for stateless serverless services, but we intend to add examples for stateful multi-cloud services in the near future
 
+### AWS Prerequisites
+
+- [AWS CLI installed, configured and logged in](https://github.com/aws/aws-cli)
+
+### Google Cloud Platform Prerequisites
+
+* [GCP gcloud CLI Installed configured and logged in](https://cloud.google.com/sdk/docs/install)
+* gcloud CLI and the service account you use must have all the required permissions to the project and the APIs
+
+
+
+## Multi-Cloud
+
+This project demonstrates using pulumi for multi-cloud deployment. Multi-cloud deployment can be useful to avoid vendor lock-in and allow you to leverage more power when negotiating with cloud providers. Currently multi-cloud is only demonstrated for stateless serverless services, but we intend to add examples for stateful multi-cloud services in the near future
+
 ## Setup
 
 Clone the repository and cd into the infra directory.
 
 ```bash
 git clone git@github.com:omerholz/chatbot-example.git
+
 cd chatbot-example
 ```
 

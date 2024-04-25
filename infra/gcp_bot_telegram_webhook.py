@@ -1,18 +1,18 @@
+import os
+
 import pulumi
 import pulumi_aws as aws
 import pulumi_gcp as gcp
-from pulumi import Config
-import os
 
 from telegram_webhook_provider import Webhook
 from utils import python_version, prepare_code
 
 PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
-config = Config()
+
 bucket_name = os.environ.get('TELEGRAM_BOT_GCP_BUCKET')
 bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-region = os.environ.get('TELEGRAM_BOT_GCP_REGION')
+
 def setup_cloud_function(cloud_provider):
     zip_file = 'target/gcp_bot_code.zip'
     prepare_code(bot_dir, zip_file, cloud_provider=cloud_provider)
@@ -63,7 +63,7 @@ def register_webhook(function, token_config_key="telegram_bot_token"):
     # Register the Telegram webhook using the full URL including the route
     webhook_url = pulumi.Output.concat(function.https_trigger_url, "/bot")
     webhook = Webhook("telegramWebhookRegistration",
-                      token=pulumi.Config().require_secret(token_config_key),
+                      token=bot_token,
                       url=webhook_url)
 
     # Export the API endpoint URL including the /bot route
