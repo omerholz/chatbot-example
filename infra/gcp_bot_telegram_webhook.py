@@ -11,6 +11,7 @@ PY_VER = aws.lambda_.Runtime(python_version)
 bot_dir = '../bot'
 
 bucket_name = os.environ.get('TELEGRAM_BOT_GCP_BUCKET')
+region = os.environ.get('TELEGRAM_BOT_GCP_REGION')
 bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
 
 def setup_cloud_function(cloud_provider):

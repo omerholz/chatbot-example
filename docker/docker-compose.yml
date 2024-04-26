@@ -10,6 +10,8 @@ services:
     environment:
       - AWS_DEFAULT_REGION=us-east-1
       - GCP_PROJECT_ID=playground-420620
+      - TELEGRAM_BOT_GCP_REGION=us-east4
+      - TELEGRAM_BOT_GCP_BUCKET=telegram-bot-playground-420620
       - GOOGLE_CREDENTIALS=/root/.gcp/gcp-service-account.json
     env_file:
       - .secrets.env

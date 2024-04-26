@@ -1,25 +1,27 @@
 FROM python:3.12-slim-bookworm
-RUN pip3 install --upgrade pip
-RUN apt-get update && apt-get install -y curl
 
+# Set a working directory
+WORKDIR /app/infra
+RUN python3.12 -m venv .venv
+RUN .venv/bin/pip install --upgrade pip
+RUN apt-get update && apt-get install -y curl
 
 # Install Pulumi
 RUN curl -fsSL https://get.pulumi.com | sh
 
 # Set the path
-ENV PATH=$PATH:/root/.pulumi/bin
-
-# Copy your Pulumi project files into the container
-COPY ../bot /app/bot
-COPY ../infra /app/infra
-COPY ../docker/scripts/pulumi-client-init.sh /app/scripts/pulumi-client-init.sh
-RUN chmod +x /app/scripts/pulumi-client-init.sh
-
-# Set a working directory
-WORKDIR /app/infra
+ENV PATH="/root/.pulumi/bin:/app/infra/.venv/bin:$PATH"
 
 ## Install Python dependencies
-RUN pip3 install -r requirements.txt
+COPY infra/requirements.txt /app/infra/requirements.txt
+RUN .venv/bin/pip install --no-cache-dir -r requirements.txt
+# Copy the Pulumi client init script
+COPY docker/scripts/pulumi-client-init.sh /app/scripts/pulumi-client-init.sh
+RUN chmod +x /app/scripts/pulumi-client-init.sh
+
+# Copy your Pulumi project files into the container
+COPY bot /app/bot
+COPY infra /app/infra
 
 # Start a bash session by default
 CMD ["/app/scripts/pulumi-client-init.sh"]
